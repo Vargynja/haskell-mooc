@@ -126,7 +126,10 @@ capitalize' (head:tail) = toUpper head : tail
 --   * the function takeWhile
 
 powers :: Int -> Int -> [Int]
-powers k max = todo
+powers k max = takeWhile (<= max) (powers' k)
+
+powers' :: Int -> [Int]
+powers' k = iterate (k*) 1
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a functional while loop. While should be a function
@@ -149,7 +152,9 @@ powers k max = todo
 --     ==> Avvt
 
 while :: (a->Bool) -> (a->a) -> a -> a
-while check update value = todo
+while check update value = if check value
+    then while check update (update value)
+    else value
 
 ------------------------------------------------------------------------------
 -- Ex 8: another version of a while loop. This time, the check
@@ -169,8 +174,9 @@ while check update value = todo
 -- Hint! Remember the case-of expression from lecture 2.
 
 whileRight :: (a -> Either b a) -> a -> b
-whileRight check x = todo
-
+whileRight check x = case check x of
+    Left n -> n
+    Right n -> whileRight check n
 -- for the whileRight examples:
 -- step k x doubles x if it's less than k
 step :: Int -> Int -> Either Int Int
@@ -193,8 +199,10 @@ bomb x = Right (x-1)
 -- Hint! This is a great use for list comprehensions
 
 joinToLength :: Int -> [String] -> [String]
-joinToLength = todo
+joinToLength n xs =  [x | x <- joinToLength' n xs, length x == n]
 
+joinToLength' :: Int -> [String] -> [String]
+joinToLength' n xs = [f ++ l |  f <- xs, l <- xs]
 ------------------------------------------------------------------------------
 -- Ex 10: implement the operator +|+ that returns a list with the first
 -- elements of its input lists.
@@ -207,6 +215,8 @@ joinToLength = todo
 --   [] +|+ [True]        ==> [True]
 --   [] +|+ []            ==> []
 
+(+|+) :: [a] -> [a] -> [a]
+lt +|+ rt = take 1 lt ++ take 1 rt
 
 ------------------------------------------------------------------------------
 -- Ex 11: remember the lectureParticipants example from Lecture 2? We
@@ -223,7 +233,7 @@ joinToLength = todo
 --   sumRights [Left "bad!", Left "missing"]         ==>  0
 
 sumRights :: [Either a Int] -> Int
-sumRights = todo
+sumRights xs = sum $ rights xs
 
 ------------------------------------------------------------------------------
 -- Ex 12: recall the binary function composition operation
@@ -239,7 +249,9 @@ sumRights = todo
 --   multiCompose [(3*), (2^), (+1)] 0 ==> 6
 --   multiCompose [(+1), (2^), (3*)] 0 ==> 2
 
-multiCompose fs = todo
+multiCompose :: [a -> a] -> (a -> a)
+multiCompose = foldr (.) id
+
 
 ------------------------------------------------------------------------------
 -- Ex 13: let's consider another way to compose multiple functions. Given
@@ -260,7 +272,12 @@ multiCompose fs = todo
 --   multiApp id [head, (!!2), last] "axbxc" ==> ['a','b','c'] i.e. "abc"
 --   multiApp sum [head, (!!2), last] [1,9,2,9,3] ==> 6
 
-multiApp = todo
+multiApp :: ([a] -> b) -> [t -> a] -> t -> b
+multiApp f gs x = f $ multiApp' gs x
+
+multiApp' :: [t -> a] -> t -> [a]
+multiApp' [] x = []
+multiApp' (g:gs) x = g x : multiApp' gs x  
 
 ------------------------------------------------------------------------------
 -- Ex 14: in this exercise you get to implement an interpreter for a
