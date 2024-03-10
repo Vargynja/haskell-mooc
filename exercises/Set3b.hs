@@ -28,6 +28,7 @@ module Set3b where
 import Mooc.LimitedPrelude
 import Mooc.Todo
 
+
 ------------------------------------------------------------------------------
 -- Ex 1: given numbers start, count and end, build a list that starts
 -- with count copies of start and ends with end.
@@ -39,7 +40,8 @@ import Mooc.Todo
 --   buildList 7 0 3 ==> [3]
 
 buildList :: Int -> Int -> Int -> [Int]
-buildList start count end = todo
+buildList start 0 end = [end]
+buildList start count end = start : buildList start (count - 1) end
 
 ------------------------------------------------------------------------------
 -- Ex 2: given i, build the list of sums [1, 1+2, 1+2+3, .., 1+2+..+i]
@@ -49,8 +51,11 @@ buildList start count end = todo
 -- Ps. you'll probably need a recursive helper function
 
 sums :: Int -> [Int]
-sums i = todo
+sums i = sums' i : sums i
 
+sums' :: Int -> Int
+sums' 0 = 0
+sums' x = x + sums' (x-1)
 ------------------------------------------------------------------------------
 -- Ex 3: define a function mylast that returns the last value of the
 -- given list. For an empty list, a provided default value is

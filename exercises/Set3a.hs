@@ -312,4 +312,13 @@ multiApp' (g:gs) x = g x : multiApp' gs x
 -- function, the surprise won't work. See section 3.8 in the material.
 
 interpreter :: [String] -> [String]
-interpreter commands = todo
+interpreter commands = interpreter' 0 0 commands
+
+interpreter' :: Int -> Int -> [String] -> [String]
+interpreter' x y [] = []
+interpreter' x y (c:cs) = case c == "up" of interpreter' x (y+1) cs 
+                                c == "down" of interpreter' x (y-1) cs
+                                c == "right" of interpreter' (x+1) y cs
+                                c == "left" of interpreter' (x-1) y cs
+                                c == "printY" of (show y) : [interpreter' x y cs]
+                                c == "printX" of (show x) : [interpreter' x y cs]
